@@ -5,6 +5,7 @@ import nltk
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+from functools import reduce
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -15,6 +16,15 @@ spamContent = inputFile.read().splitlines()
 
 
 
+
+
+
+'''
+Main function
+    -train the model using the training data
+    -make predictions on the testing data and test data
+    -compute and log performance metrics (results.log or results.txt)'''
+
 def cleanText(content):
     '''
     This function takes in a file's content, makes all text into lowercase, removes all special characters, and returns a list of lines.
@@ -24,9 +34,20 @@ def cleanText(content):
     for line in content:                        #Go through each line in the content
         line = line.lower()                         #Make all text lowercase
         line = re.sub(r'[^a-zA-Z0-9\s]', ' ', line)   #Remove all special characters  found online https://www.geeksforgeeks.org/python-remove-all-characters-except-letters-and-numbers/
+        #print("check 1:",type(line))
         word_tokens = word_tokenize(line)            #Tokenize the line
-        line = [w for w in word_tokens if not w.lower() in stop_words] #Remove all stop words
-        line = ' '.join(line)                       #Join the list of words back into a string
+        #line = [w for w in word_tokens if not w.lower() in stop_words] #Remove all stop words
+        temp_words = []                         
+        for w in word_tokens:                         #Remove all stop words
+            if not w.lower() in stop_words:
+                temp_words.append(w)
+        line = temp_words
+        line = ' '.join(line)  
+        temp_words = []
+        #print("check 2:",type(line))
+        word_tokens = word_tokenize(line)
+        line = reduce(lambda x, y: x + " " + PorterStemmer().stem(y), word_tokens, "")
+        #line = ' '.join(line)                       #Join the list of words back into a string
         #print(type(line))
         content_lines.append(line)                  #Add the cleaned line to the list
     return content_lines                            #Return the list of cleaned lines
@@ -78,9 +99,9 @@ def createSpamAndHamDict(spamContent, hamContent):
 
 contentLines = cleanText(spamContent)       #Clean the text
 
-#for i in contentLines:
+for i in contentLines:
 #    print(type(i))
-#    print(i)
+    print(i)
 
 spamLines, hamLines = seperateSpamAndHam(contentLines)  #Seperate spam and ham into two lists
 
@@ -88,4 +109,3 @@ spamLines, hamLines = seperateSpamAndHam(contentLines)  #Seperate spam and ham i
 #    print(i)
 
 spamDict,hamDict = createSpamAndHamDict(spamLines,hamLines)     #Create dictionaries for each word set
-
