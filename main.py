@@ -1,10 +1,14 @@
+import ssl
+import certifi
 import re
 import nltk
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
-nltk.download('all')
+ssl._create_default_https_context = ssl._create_unverified_context
+
+nltk.download('stopwords')
 inputFile = open("SMSSpamCollection.txt", "r")
 spamContent = inputFile.read().splitlines() 
 
@@ -22,7 +26,8 @@ def cleanText(content):
         line = re.sub(r'[^a-zA-Z0-9\s]', ' ', line)   #Remove all special characters  found online https://www.geeksforgeeks.org/python-remove-all-characters-except-letters-and-numbers/
         word_tokens = word_tokenize(line)            #Tokenize the line
         line = [w for w in word_tokens if not w.lower() in stop_words] #Remove all stop words
-        
+        line = ' '.join(line)                       #Join the list of words back into a string
+        #print(type(line))
         content_lines.append(line)                  #Add the cleaned line to the list
     return content_lines                            #Return the list of cleaned lines
 
@@ -32,16 +37,22 @@ def seperateSpamAndHam(content):
     '''
     spamContent = []
     hamContent = []
-    for line in content:                    #Go through each line in the content 
-        if line.startswith("spam"):             #If the line starts with spam, add it to the spam list
-            line.split(' ',1)                       #Split the line at the first space to remote the spam label
-            tempLine = line.split(' ',1)[1]         #Create a string without "spam"
-            spamContent.append(tempLine)            #Add the string without "spam" to the spam list
-        else:                                   #If the line does not start with spam, add it to the ham list
-            line.split(' ',1)                       #Split the line at the first space to remote the ham label
-            tempLine = line.split(' ',1)[1]         #Create a string without "ham"
-            hamContent.append(tempLine)             #Add the string without "ham" to the ham list
-    return spamContent, hamContent                  #Return the spam and ham lists
+    for line in content:                    # Go through each line in the content 
+        if line.startswith("spam"):             # If the line starts with spam, add it to the spam list
+            parts = line.split(' ', 1)              # Split the line at the first space to remove the spam label
+            if len(parts) > 1:                      # Ensure there are at least two parts after splitting
+                tempLine = parts[1]                     # Create a string without "spam"
+            else:
+                tempLine = parts[0]                     # Use the whole line if no space is found
+            spamContent.append(tempLine)            # Add the string to the spam list
+        else:                                   # If the line does not start with spam, add it to the ham list
+            parts = line.split(' ', 1)              # Split the line at the first space to remove the ham label
+            if len(parts) > 1:                      # Ensure there are at least two parts after splitting
+                tempLine = parts[1]                     # Create a string without "ham"
+            else:
+                tempLine = parts[0]                     # Use the whole line if no space is found
+            hamContent.append(tempLine)             # Add the string to the ham list
+    return spamContent, hamContent                  # Return the spam and ham lists
 
 def createSpamAndHamDict(spamContent, hamContent):
     spamDict = {}                           #Create a dictionary for all the words in spam, use each word as a key and each value is the number of times a word appears
@@ -67,9 +78,14 @@ def createSpamAndHamDict(spamContent, hamContent):
 
 contentLines = cleanText(spamContent)       #Clean the text
 
+#for i in contentLines:
+#    print(type(i))
+#    print(i)
+
 spamLines, hamLines = seperateSpamAndHam(contentLines)  #Seperate spam and ham into two lists
 
 #for i in spamLines:
 #    print(i)
 
 spamDict,hamDict = createSpamAndHamDict(spamLines,hamLines)     #Create dictionaries for each word set
+
