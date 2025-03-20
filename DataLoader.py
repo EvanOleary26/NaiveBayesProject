@@ -66,7 +66,8 @@ class DataPreprocessing:
             line = ' '.join(line)                        # Connect the words into one single string
             temp_words = []                              # Reset temp_words to empty
             word_tokens = word_tokenize(line)            # Reset word_tokens to be a line, but without stop words
-            line = reduce(lambda x, y: x + " " + PorterStemmer().stem(y), word_tokens, "")  # Get the stem of the words in a line, and combine them into a string
+            line = reduce(lambda x, y: x + " " + PorterStemmer().stem(y), word_tokens, "")  # Get the stem of the words in a line, and combine them into a strin
+            line = line.replace(' ','',1)
             content_lines.append(line)                   # Add the cleaned line to the list content_lines
         return content_lines
             
@@ -90,19 +91,11 @@ class DataPreprocessing:
         labeledLines = []
         for line in content_lines:                    # Go through each line in the content
             if line.startswith("spam"):             # If the line starts with spam, add it to the spam list
-                parts = line.split(' ', 1)              # Split the line at the first space to remove the spam label
-                if len(parts) > 1:                      # Ensure there are at least two parts after splitting
-                    line = parts[1]                     # Create a string without "spam"
-                else:
-                    tempLine = parts[0]                     # Use the whole line if no space is found
-                labeledLines.append([1,tempLine])            # Add the string with the spam identifier
+                line = line.replace("spam ","")              # Split the line at the first space to remove the spam label
+                labeledLines.append([1,line])            # Add the string with the spam identifier
             else:                                   # If the line does not start with spam, add it to the ham list
-                parts = line.split(' ', 1)              # Split the line at the first space to remove the ham label
-                if len(parts) > 1:                      # Ensure there are at least two parts after splitting
-                    tempLine = parts[1]                     # Create a string without "ham"
-                else:
-                    tempLine = parts[0]                     # Use the whole line if no space is found
-                labeledLines.append([0,tempLine])             # Add the string with the ham identifier
+                line = line.replace("ham ","")              # Split the line at the first space to remove the ham label
+                labeledLines.append([0,line])             # Add the string with the ham identifier
         return labeledLines                         # Return a list with each element being a list wiht the binary label and the text of the message
     
     def split_data(self,content_lines):

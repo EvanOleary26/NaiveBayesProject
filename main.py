@@ -7,18 +7,23 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from functools import reduce
 
+from DataLoader import DataPreprocessing
+from NaiveBayes import NBClassifier
+
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 nltk.download('stopwords')
+nltk.download('punkt_tab')
 inputFile = open("SMSSpamCollection.txt", "r")
-spamContent = inputFile.read().splitlines() 
+fileContent = inputFile.read().splitlines() 
 
 
 
 
 
 
-
+"""
 '''
 Main function
     -train the model using the training data
@@ -109,3 +114,52 @@ spamLines, hamLines = seperateSpamAndHam(contentLines)  #Seperate spam and ham i
 #    print(i)
 
 spamDict,hamDict = createSpamAndHamDict(spamLines,hamLines)     #Create dictionaries for each word set
+"""
+
+test = DataPreprocessing()
+
+
+countSpam = 0
+countHam = 0
+
+temp = test.load_data()
+
+for line in temp:
+    if line[0] == 1:
+        countSpam += 1
+    else:
+        countHam += 1
+
+print(f'Size of test data: {len(temp)}')
+print(f'    Number of Spam lines: {countSpam}')
+print(f'    Number of Ham lines: {countHam}')
+
+trainingData,testingData = test.split_data(temp)
+
+numData = len(trainingData) + len(testingData)
+
+countSpam = 0
+countHam = 0
+
+for line in trainingData:
+    if line[0] == 1:
+        countSpam += 1
+    else:
+        countHam += 1
+
+
+print(f'Size of training data: {len(trainingData)}')
+print(f'    Number of Spam lines: {countSpam}')
+print(f'    Number of Ham lines: {countHam}')
+print(f'Size of testing data: {len(testingData)}')
+print(f'Percent of data that is training {(len(trainingData)/numData)*100:.2f}%')
+
+probData = NBClassifier()
+
+probData.train(trainingData)
+
+print(f'Spam Word Counts: {probData.word_counts['spam']}')
+
+print()
+
+print(f'Ham Word Counts: {probData.word_counts['ham']}')
