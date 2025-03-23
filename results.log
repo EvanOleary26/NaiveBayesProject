@@ -1,0 +1,9 @@
+Evaluation Metrics:
+True Positives: 131
+True Negatives: 964
+False Positives: 8
+False Negatives: 12
+Accuracy: 0.9821
+Precision: 0.9424
+Recall: 0.9161
+F1 Score: 0.9291

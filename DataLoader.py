@@ -11,26 +11,6 @@ from functools import reduce
 
 ssl._create_default_https_context = ssl._create_unverified_context
 nltk.download('stopwords')
-'''
-Data Preprocessing class
-Functions:
-    preprocess():
-        - convert all text to lowercase
-        - remove all special characters
-        - remove all stop words
-        - rempove all special characters
-        - apply stemming
-        - return a list of lines
-    load_data():
-        - read in the file
-        - seperate labels from text
-            - spam = 1, ham = 0
-        - return a list of tuples
-    split_data():
-        - shuffle the data
-        - split the data into training and testing sets
-        - return two lists
-'''
 
 class DataPreprocessing:
     

@@ -1,2 +1,6 @@
-nltk
 certifi
+click
+joblib
+nltk
+regex
+tqdm

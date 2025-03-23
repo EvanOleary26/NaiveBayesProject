@@ -1,14 +1,3 @@
-'''
-NaiveBayes class
-Functions:
-    train():
-        - compute class priors : p(ham) and p(spam)
-        - count word occurances separately for spam and ham
-        - compute probabilities of words given a class p(word|ham), p(word|spam) with Laplace smoothing
-    prediction():
-        - compute the probability of a message being spam or ham
-        - assign the label with the higher probability
-'''
 
 class NBClassifier:
     def __init__(self):                                 #Default constructor  
@@ -24,6 +13,8 @@ class NBClassifier:
         - count word occurances separately for spam and ham
         - compute probabilities of words given a class p(word|ham), p(word|spam) with Laplace smoothing
         '''
+        spam_count = 0
+        ham_count = 0
         for label,message in train_data:
             if label == 1:                                      #Check if the word message is a spam message
                 spam_count += 1                                 #Increase the count of spam messages by 1
@@ -56,11 +47,32 @@ class NBClassifier:
             self.word_probs['spam'][word] = (self.word_counts['spam'].get(word,0) + 1) / (self.total_counts['spam'] + vocab_size)
             self.word_probs['ham'][word] = (self.word_counts['ham'].get(word,0) + 1) / (self.total_counts['ham'] + vocab_size)
 
-def prediction (self, testing_data):
-    '''
-    prediction():
-        - compute the probability of a message being spam or ham
-        - assign the label with the higher probability
-    '''
-    
-                
+    def prediction(self, testing_data):
+        '''
+        prediction():
+            - compute the probability of a message being spam or ham
+            - assign the label with the higher probability
+        '''
+        predictions = []
+
+        for message in testing_data:
+            # Initialize log probabilities for spam and ham
+            spam_prob = self.class_priors['spam']
+            ham_prob = self.class_priors['ham']
+
+            # Split the message into words
+            words = message.split()
+
+            # Compute the log probabilities for each word in the message
+            for word in words:
+                if word in self.vocab:  # Only consider words in the vocabulary
+                    spam_prob *= self.word_probs['spam'].get(word, 1 / (self.total_counts['spam'] + len(self.vocab)))
+                    ham_prob *= self.word_probs['ham'].get(word, 1 / (self.total_counts['ham'] + len(self.vocab)))
+
+                # Assign the label based on the higher probability
+            if spam_prob > ham_prob:
+                predictions.append(1)  # Spam
+            else:
+                predictions.append(0)  # Ham
+
+        return predictions
