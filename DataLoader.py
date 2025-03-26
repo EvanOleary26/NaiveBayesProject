@@ -76,6 +76,8 @@ class DataPreprocessing:
             else:                                   # If the line does not start with spam, add it to the ham list
                 line = line.replace("ham ","")              # Split the line at the first space to remove the ham label
                 labeledLines.append([0,line])             # Add the string with the ham identifier
+
+        inputFile.close()
         return labeledLines                         # Return a list with each element being a list wiht the binary label and the text of the message
     
     def split_data(self,content_lines):

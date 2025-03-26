@@ -36,5 +36,7 @@ def main():
         for metric, value in metrics.items():
             log_file.write(f"{metric}: {value:.4f}\n" if isinstance(value, float) else f"{metric}: {value}\n")
 
+
+
 if __name__ == "__main__":
     main()

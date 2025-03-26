@@ -9,7 +9,7 @@ class EvaluationMetrics:
             # Initialize counts
             TP = TN = FP = FN = 0
 
-            # Calculate TP, TN, FP, FN
+            # Calculate True Positive, True Negative, False Positive, and False Negative
             for actual, predicted in zip(actual_labels, predicted_labels):
                 if actual == 1 and predicted == 1:
                     TP += 1
